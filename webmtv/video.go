@@ -1,6 +1,7 @@
 package webmtv
 
 import (
+	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"html/template"
@@ -38,7 +39,6 @@ func VideoPage(w http.ResponseWriter, r *http.Request) {
 func HandleComment(w http.ResponseWriter, r *http.Request) {
 	vid := r.FormValue("vid")
 	str := r.FormValue("cm")
-
 	sid, err := r.Cookie("WEBMTV-SESSION-ID")
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusFound)
@@ -68,5 +68,5 @@ func HandleComment(w http.ResponseWriter, r *http.Request) {
 		ReturnInfo(w, err.Error(), false)
 		return
 	}
-	http.Redirect(w, r, "/v?vid="+vid, http.StatusFound)
+	fmt.Fprint(w, u.ID)
 }

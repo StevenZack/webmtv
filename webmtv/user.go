@@ -32,7 +32,6 @@ func UserPage(w http.ResponseWriter, r *http.Request) {
 		ReturnInfo(w, err.Error(), false)
 		return
 	}
-	fmt.Println(len(upd.MyVideos))
 	t, _ := template.ParseFiles("./html/user.html")
 	t.Execute(w, upd)
 }

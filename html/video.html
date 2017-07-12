@@ -1,32 +1,49 @@
 <!DOCTYPE html>
 <html>
+
+{{with .MVideo}}
 <head>
 	<title>WebmTV</title>
 	<meta charset="utf-8">
-	 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<script type="text/javascript">
+		function addComment () {
+			 var xhr=new  XMLHttpRequest()
+			 var fd="cm="+encodeURIComponent(document.getElementsByName("cm")[0].value)+"&vid={{.Vid}}"
+			 xhr.onreadystatechange=function(){
+				if (xhr.readyState==XMLHttpRequest.DONE) {
+				   var p=document.createElement("p")
+				   var a =document.createElement("a")
+				   var span=document.createElement("span")
+				   a.href="/u?id="+xhr.responseText
+				   a.innerHTML=xhr.responseText
+				   p.appendChild(a)
+
+				   span.innerHTML=":"+document.getElementsByName("cm")[0].value
+				   p.appendChild(span)
+				   var mConatainer=document.getElementById("cmContainer")
+				   mConatainer.insertBefore(p, mConatainer.firstChild)
+				}
+			 }
+			 xhr.open("POST", "/comment")
+			 xhr.setRequestHeader("Content-Type", "Application/x-www-form-urlencoded")
+			 xhr.send(fd)
+		}
+	</script>
 </head>
 <body><center>
-{{with .MVideo}}
 <b>{{.Title}}</b><br>
 <video src="{{.VURL}}" width="320" height="180" controls autoplay></video><br>
 <p>By:<a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a></p>
-<form action="/comment" method="post">
-<table>
-	<tr>
-		<td>
-			<textarea name="cm" rows="1"></textarea>
-			<input type="hidden" name="vid" value="{{.Vid}}">
-		</td>
-		<td>
-			<input type="submit" name="submit" value="comment">
-		</td>
-	</tr>
-</table>
-</form><br>
+
+<input type="text" name="cm">
+<input type="button"  value="comment" onclick="addComment()"><br>
 {{end}}
+<div id="cmContainer">
 {{range .MComments}}
 <p><a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a>:{{.Data}}</p>
 {{end}}
+</div>
 </center>
 </body>
 </html>
