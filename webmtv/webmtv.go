@@ -12,12 +12,13 @@ type User struct {
 	Sessionid string
 }
 type Video struct {
-	Uploadtime time.Time
-	Title      string
-	Vid        string
-	VURL       string
-	Cover      string
-	OwnerID    string
+	Uploadtime   time.Time
+	Title        string
+	Vid          string
+	VURL         string
+	Cover        string
+	OwnerID      string
+	IsWebTorrent bool
 }
 type Comment struct {
 	Data        string

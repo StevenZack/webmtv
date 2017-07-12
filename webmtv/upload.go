@@ -37,6 +37,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	mVideo := r.FormValue("video")
 	mCover := r.FormValue("cover")
 	title := r.FormValue("title")
+	isWebTorrent := r.FormValue("videoType") == "webtorrent"
 
 	ct := time.Now().Unix()
 	h5 := md5.New()
@@ -48,12 +49,13 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	defer s.Close()
 	mgoNewVideo := s.DB("webmtv").C("videos")
 	newVideo := Video{
-		Uploadtime: time.Now(),
-		Title:      title,
-		Vid:        token,
-		VURL:       mVideo,
-		Cover:      mCover,
-		OwnerID:    u.ID,
+		Uploadtime:   time.Now(),
+		Title:        title,
+		Vid:          token,
+		VURL:         mVideo,
+		Cover:        mCover,
+		OwnerID:      u.ID,
+		IsWebTorrent: isWebTorrent,
 	}
 	err = mgoNewVideo.Insert(&newVideo)
 	if err != nil {

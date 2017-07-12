@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
 
-{{with .MVideo}}
 <head>
 	<title>WebmTV</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+{{with .MVideo}}
+	{{if .IsWebTorrent}}
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js"></script>
+	{{end}}
 	<script type="text/javascript">
 		function addComment () {
 			 var xhr=new  XMLHttpRequest()
@@ -30,20 +33,40 @@
 			 xhr.send(fd)
 		}
 	</script>
-</head>
-<body><center>
-<b>{{.Title}}</b><br>
-<video src="{{.VURL}}" width="320" height="180" controls autoplay></video><br>
-<p>By:<a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a></p>
+	</head>
+	<body><center>
+	<b>{{.Title}}</b><br>
+	{{if not .IsWebTorrent}}
+	<video src="{{.VURL}}" width="320" height="180" controls autoplay></video><br>
+	{{else}}
+	<div id="vContainer"></div>
+	{{end}}
+	<p>By:<a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a></p>
 
-<input type="text" name="cm">
-<input type="button"  value="comment" onclick="addComment()"><br>
+	<input type="text" name="cm">
+	<input type="button"  value="comment" onclick="addComment()"><br>
 {{end}}
 <div id="cmContainer">
 {{range .MComments}}
-<p><a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a>:{{.Data}}</p>
+	<p><a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a>:{{.Data}}</p>
 {{end}}
 </div>
 </center>
+{{with .MVideo}}
+{{if .IsWebTorrent}}
+	<script type="text/javascript">
+	var client = new WebTorrent()
+	var torrentId = '{{.VURL}}'
+
+	client.add(torrentId, function (torrent) {
+		var file = torrent.files.find(function (file) {
+			console.log('got file')
+		    return file.name.endsWith('.mp4')
+		  })
+		file.appendTo('#vContainer')
+	})
+</script>
+{{end}}
+{{end}}
 </body>
 </html>
