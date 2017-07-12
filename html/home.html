@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>WebmTV</title>
+	<meta charset="utf-8">
+	 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<script type="text/javascript">
+		function getCookie(cname){
+		  var name = cname + "=";
+		  var ca = document.cookie.split(';');
+		  for(var i=0; i<ca.length; i++) 
+		  {
+		    var c = ca[i].trim();
+		    if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+		  }
+		  return "";
+		}
+	</script>
+</head>
+<body>
+<center>
+<b>WebmTV</b><br>
+{{if .Loggedin}}
+<a href="/upload">upload</a>
+<a href="/u?id={{.Me}}">{{.Me}}</a>
+{{else}}
+<a href="login" id="ma">login</a>
+{{end}}
+<table border="0">
+	{{range .New}}
+	<tr>
+		<td><img src="{{.Cover}}" width="200" height="100"></td>
+		<td><a href="v?vid={{.Vid}}">{{.Title}}</a></td>
+	</tr>
+	{{end}}
+</table>
+</center>
+</body>
+</html>

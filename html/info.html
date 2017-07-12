@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebmTV</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width maximum-scale=1 initial-scale=1">
+</head>
+<body>
+<center><b>{{.Info}}</b></center>
+{{if .JumpToHome}}
+<script type="text/javascript">
+    setTimeout("location.href='/'", 1000)
+</script>
+{{end}}
+</body>
+</html>
