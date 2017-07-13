@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"html/template"
 	"io"
 	"net/http"
@@ -64,4 +65,83 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	//return upload-succeed page
 	ReturnInfo(w, "succeed", true)
+}
+func EditVideo(w http.ResponseWriter, r *http.Request) {
+	vid := r.FormValue("vid")
+	sid, err := r.Cookie("WEBMTV-SESSION-ID")
+	if err != nil {
+		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
+		ReturnInfo(w, "please log in first", true)
+		return
+	}
+	u, err := CheckOutSessionID(sid)
+	if err != nil {
+		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
+		ReturnInfo(w, "please log in first", true)
+		return
+	}
+	fundVideo := Video{}
+	s, _ := mgo.Dial("127.0.0.1")
+	defer s.Close()
+	cv := s.DB("webmtv").C("videos")
+	err = cv.Find(bson.M{"vid": vid}).One(&fundVideo)
+	if err != nil {
+		ReturnInfo(w, "No such video", false)
+		return
+	}
+	if fundVideo.OwnerID != u.ID {
+		ReturnInfo(w, "You don't have permission to edit this video", false)
+		return
+	}
+	if r.Method == "GET" { // GET
+		t, _ := template.ParseFiles("./html/editvideo.html")
+		t.Execute(w, fundVideo)
+		return
+	}
+	//POST
+	err = cv.Update(bson.M{"vid": vid}, bson.M{"$set": bson.M{
+		"title":        r.FormValue("title"),
+		"vurl":         r.FormValue("video"),
+		"cover":        r.FormValue("cover"),
+		"iswebtorrent": r.FormValue("videoType") == "webtorrent",
+	}})
+	if err != nil {
+		ReturnInfo(w, "Update video info failed:"+err.Error(), false)
+		return
+	}
+	ReturnInfo(w, "Succeed", true)
+}
+func DeleteVideo(w http.ResponseWriter, r *http.Request) {
+	vid := r.FormValue("vid")
+	sid, err := r.Cookie("WEBMTV-SESSION-ID")
+	if err != nil {
+		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
+		ReturnInfo(w, "please log in first", true)
+		return
+	}
+	u, err := CheckOutSessionID(sid)
+	if err != nil {
+		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
+		ReturnInfo(w, "please log in first", true)
+		return
+	}
+	fundVideo := Video{}
+	s, _ := mgo.Dial("127.0.0.1")
+	defer s.Close()
+	cv := s.DB("webmtv").C("videos")
+	err = cv.Find(bson.M{"vid": vid}).One(&fundVideo)
+	if err != nil {
+		ReturnInfo(w, "No such video", false)
+		return
+	}
+	if fundVideo.OwnerID != u.ID {
+		ReturnInfo(w, "You don't have permission to edit this video", false)
+		return
+	}
+	err = cv.Remove(bson.M{"vid": vid})
+	if err != nil {
+		ReturnInfo(w, "delete failed:"+err.Error(), false)
+		return
+	}
+	ReturnInfo(w, "Succeed", true)
 }

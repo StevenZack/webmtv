@@ -3,22 +3,49 @@
 <head>
 	<title>WebmTV</title>
 	<meta charset="utf-8">
-	 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<script type="text/javascript">
+		function LogOut(){
+			setCookie("WEBMTV-SESSION-ID","",0)
+			location.href="/"
+		}
+		function setCookie(cname,cvalue,exdays){
+		  var d = new Date();
+		  d.setTime(d.getTime()+(exdays*24*60*60*1000));
+		  var expires = "expires="+d.toGMTString();
+		  document.cookie = cname + "=" + cvalue + "; " + expires;
+		}
+	</script>
 </head>
 <body><center>
 {{with .Me}}
 	<h1><b>{{.ID}}</b></h1>
 {{end}}
-
+{{if .IsMyPage}}
+<input type="button" value="log out" onclick="LogOut()">
+{{end}}
 <p>Uploads :</p>
 
 
 <table border="0">
-{{range .MyVideos}}
-	<tr>
-		<td><img src="{{.Cover}}" width="200" height="100"></td>
-		<td><a href="v?vid={{.Vid}}">{{.Title}}</a></td>
-	</tr>
+{{if .IsMyPage}}
+	{{range .MyVideos}}
+		<tr>
+			<td><img src="{{.Cover}}" width="200" height="100"></td>
+			<td><a href="/v?vid={{.Vid}}">{{.Title}}</a><br>
+				<a href="/editvideo?vid={{.Vid}}">edit</a>
+				<a href="/deletevideo?vid={{.Vid}}">delete</a>
+			</td>
+		</tr>
+	{{end}}
+{{else}}
+	{{range .MyVideos}}
+		<tr>
+			<td><img src="{{.Cover}}" width="200" height="100"></td>
+			<td><a href="/v?vid={{.Vid}}">{{.Title}}</a>
+			</td>
+		</tr>
+	{{end}}
 {{end}}
 </table>
 </center></body>

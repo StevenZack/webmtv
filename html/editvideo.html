@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>WebmTV - EditVideo</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js"></script>
+	<script type="text/javascript">
+	 	function testVideo () {
+	 		var vurl=document.getElementsByName("video")[0].value
+	 		var tvContainer=document.getElementById("tvContainer")
+	 		while (tvContainer.firstChild) {
+	 			tvContainer.removeChild(tvContainer.firstChild)
+	 		}
+	 		if (document.getElementsByName("videoType")[0].selectedIndex==1) {
+	 			var client =new WebTorrent()
+	 			client.add(vurl,function (torrent) {
+	 				var file=torrent.files.find(function (file) {
+	 					return file.name.endsWith('.mp4')
+	 				})
+	 				file.appendTo('#tvContainer')
+	 			})
+	 		}else{
+	 			var newVideo=document.createElement("video")
+	 			newVideo.src=vurl
+	 			newVideo.controls="controls"
+	 			newVideo.autoplay="autoplay"
+	 			newVideo.width ="200"
+	 			newVideo.height = '100'
+	 			tvContainer.appendChild(newVideo)
+	 		}
+	 	}
+	 	function testCover () {
+	 		var curl=document.getElementsByName("cover")[0].value
+	 		document.getElementById("tc").src=curl
+	 	}
+	</script>
+</head>
+<body>
+<center>
+<form action="/editvideo" method="post" >
+	Title:<input type="text" name="title" maxlength="35" value="{{.Title}}"><br>
+	Video URL:<input type="text" name="video" value="{{.VURL}}">
+		<input type="button" name="testV" onclick="testVideo()" value="Test"><br>
+	Cover URL:<input type="text" name="cover" value="{{.Cover}}">
+		<input type="button" name="testC" onclick="testCover()" value="Test"><br>
+	<select name="videoType">
+		{{if .IsWebTorrent}}
+		<option value="normal">Normal</option>
+		<option value="webtorrent" selected>WebTorrent</option>
+		{{else}}
+		<option value="normal" selected>Normal</option>
+		<option value="webtorrent">WebTorrent</option>
+		{{end}}
+	</select>
+	<input type="hidden" name="vid" value="{{.Vid}}">
+	<input type="submit" name="submit" value="update"><br>
+</form>
+<div id="tvContainer"></div><br>
+<img id="tc" width="200" height="100">
+</center>
+</body>
+</html>

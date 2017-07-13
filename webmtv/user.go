@@ -10,6 +10,7 @@ import (
 type UserPageData struct {
 	Me       User
 	MyVideos []Video
+	IsMyPage bool
 }
 
 func UserPage(w http.ResponseWriter, r *http.Request) {
@@ -17,15 +18,18 @@ func UserPage(w http.ResponseWriter, r *http.Request) {
 	s, _ := mgo.Dial("127.0.0.1")
 	defer s.Close()
 	upd := UserPageData{}
-	cv := s.DB("webtv").C("videos")
-	cu := s.DB("webtv").C("users")
+	cv := s.DB("webmtv").C("videos")
+	cu := s.DB("webmtv").C("users")
 
 	err := cu.Find(bson.M{"id": id}).One(&upd.Me)
 	if err != nil {
-		http.NotFound(w, r)
+		ReturnInfo(w, err.Error(), false)
 		return
 	}
-
+	sid, _ := r.Cookie("WEBMTV-SESSION-ID")
+	if sid.Value == upd.Me.Sessionid {
+		upd.IsMyPage = true
+	}
 	err = cv.Find(bson.M{"ownerid": id}).Limit(10).Sort("-uploadtime").All(&upd.MyVideos)
 	if err != nil {
 		ReturnInfo(w, err.Error(), false)
