@@ -15,6 +15,10 @@
 			 var fd="cm="+encodeURIComponent(document.getElementsByName("cm")[0].value)+"&vid={{.Vid}}"
 			 xhr.onreadystatechange=function(){
 				if (xhr.readyState==XMLHttpRequest.DONE) {
+					if (xhr.responseText=="Plz Login first") {
+						window.location.href="/login"
+						return
+					}
 				   var p=document.createElement("p")
 				   var a =document.createElement("a")
 				   var span=document.createElement("span")

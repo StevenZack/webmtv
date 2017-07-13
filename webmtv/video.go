@@ -27,7 +27,7 @@ func VideoPage(w http.ResponseWriter, r *http.Request) {
 		ReturnInfo(w, err.Error(), false)
 		return
 	}
-	err = cc.Find(bson.M{"vid": vid}).Limit(10).Sort("-commenttime").All(&vpd.MComments)
+	err = cc.Find(bson.M{"vid": vid}).Limit(30).Sort("-commenttime").All(&vpd.MComments)
 	if err != nil {
 		ReturnInfo(w, err.Error(), false)
 		return
@@ -41,7 +41,7 @@ func HandleComment(w http.ResponseWriter, r *http.Request) {
 	str := r.FormValue("cm")
 	sid, err := r.Cookie("WEBMTV-SESSION-ID")
 	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
+		fmt.Fprint(w, "Plz Login first")
 		return
 	}
 	u, err := CheckOutSessionID(sid)
@@ -51,7 +51,7 @@ func HandleComment(w http.ResponseWriter, r *http.Request) {
 			Value:   "",
 			Expires: time.Now(),
 		})
-		http.Redirect(w, r, "/login", http.StatusFound)
+		fmt.Fprint(w, "Plz Login first")
 		return
 	}
 	s, _ := mgo.Dial("127.0.0.1")
