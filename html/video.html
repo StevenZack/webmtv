@@ -35,6 +35,9 @@
 	</script>
 	</head>
 	<body><center>
+	
+<b onclick="window.history.back()" style="cursor: pointer;">Back</b>
+<b onclick="location.href='/'" style="cursor: pointer;">WebmTV</b><br>
 	<b>{{.Title}}</b><br>
 	{{if not .IsWebTorrent}}
 	<video src="{{.VURL}}" width="320" height="180" controls autoplay></video><br>

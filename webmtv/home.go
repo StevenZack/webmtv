@@ -24,7 +24,7 @@ func Home(rw http.ResponseWriter, req *http.Request) {
 	}
 	defer s.Close()
 	vc := s.DB("webmtv").C("videos")
-	vc.Find(nil).Limit(10).Sort("-uploadtime").All(&hd.New)
+	vc.Find(nil).Limit(30).Sort("-uploadtime").All(&hd.New)
 	sid, err := req.Cookie("WEBMTV-SESSION-ID")
 	if err == nil {
 		user, e := CheckOutSessionID(sid)

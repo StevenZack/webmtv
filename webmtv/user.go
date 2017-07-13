@@ -5,19 +5,22 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"html/template"
 	"net/http"
+	"strconv"
 )
 
 type UserPageData struct {
-	Me       User
-	MyVideos []Video
-	IsMyPage bool
+	Me          User
+	MyVideos    []Video
+	IsMyPage    bool
+	CurrentPage int
+	TotalPage   int
 }
 
 func UserPage(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 	s, _ := mgo.Dial("127.0.0.1")
 	defer s.Close()
-	upd := UserPageData{}
+	upd := UserPageData{CurrentPage: 1, TotalPage: 1}
 	cv := s.DB("webmtv").C("videos")
 	cu := s.DB("webmtv").C("users")
 
@@ -30,7 +33,18 @@ func UserPage(w http.ResponseWriter, r *http.Request) {
 	if sid.Value == upd.Me.Sessionid {
 		upd.IsMyPage = true
 	}
-	err = cv.Find(bson.M{"ownerid": id}).Limit(10).Sort("-uploadtime").All(&upd.MyVideos)
+	//handle page
+	total, _ := cv.Find(bson.M{"ownerid": id}).Count()
+	upd.TotalPage = GetTotalPage(total)
+	if r.FormValue("reqPage") != "" {
+		upd.CurrentPage, err = strconv.Atoi(r.FormValue("reqPage"))
+		if err != nil || upd.CurrentPage < 1 || upd.CurrentPage > upd.TotalPage {
+			ReturnInfo(w, "The page you request doesn't exist", false)
+			return
+		}
+	}
+
+	err = cv.Find(bson.M{"ownerid": id}).Limit(30).Skip((upd.CurrentPage - 1) * 30).Sort("-uploadtime").All(&upd.MyVideos)
 	if err != nil {
 		ReturnInfo(w, err.Error(), false)
 		return

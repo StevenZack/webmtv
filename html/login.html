@@ -6,6 +6,8 @@
 	 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
 </head>
 <body><center>
+<b onclick="window.history.back()" style="cursor: pointer;">Back</b>
+<b onclick="location.href='/'" style="cursor: pointer;">WebmTV</b><br>
 <form action="/login" method="post">
 	<input type="text" name="id"><br>
 	<input type="password" name="password">{{.InvalidAlert}}<br>

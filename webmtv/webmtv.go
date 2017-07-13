@@ -35,3 +35,10 @@ func ReturnInfo(w http.ResponseWriter, err string, b bool) {
 	t, _ := template.ParseFiles("./html/info.html")
 	t.Execute(w, &InfoData{Info: err, JumpToHome: b})
 }
+func GetTotalPage(num int) int {
+	a := num / 30
+	if num%30 > 0 {
+		return a + 1
+	}
+	return a
+}

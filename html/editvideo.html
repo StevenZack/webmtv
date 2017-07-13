@@ -38,6 +38,8 @@
 </head>
 <body>
 <center>
+<b onclick="window.history.back()" style="cursor: pointer;">Back</b>
+<b onclick="location.href='/'" style="cursor: pointer;">WebmTV</b><br>
 <form action="/editvideo" method="post" >
 	Title:<input type="text" name="title" maxlength="35" value="{{.Title}}"><br>
 	Video URL:<input type="text" name="video" value="{{.VURL}}">
