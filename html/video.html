@@ -53,11 +53,11 @@
 	{{else}}
 	<div id="vContainer"></div>
 	{{end}}
-	<p class="top-gap-0">By:<a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a></p>
+	<p class="top-gap-0">上传者:<a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a></p>
 
 	<div class="flex-left flex-middle top-gap">
 	<input type="text" name="cm" class="unit">
-	<button type="button" class="unit-0 btn btn-primary top-gap-0" onclick="addComment()">comment</button>
+	<button type="button" class="unit-0 btn btn-primary top-gap-0" onclick="addComment()">评论</button>
 	</div>
 {{end}}
 <div id="cmContainer unit-0">

@@ -37,10 +37,10 @@
 {{end}}
 {{if .IsMyPage}}
 <div class="flex-center unit-0">
-<button type="button"  onclick="LogOut()" class="btn">logout</button>
+<button type="button"  onclick="LogOut()" class="btn">登出</button>
 </div>
 {{end}}
-<p>Uploads :</p>
+<p>上传的视频 :</p>
 
 
 <table border="0">
@@ -49,8 +49,8 @@
 		<tr>
 			<td><img src="{{.Cover}}" width="200" height="100"></td>
 			<td><a href="/v?vid={{.Vid}}">{{.Title}}</a><br>
-				<a href="/editvideo?vid={{.Vid}}">edit</a>
-				<a href="/deletevideo?vid={{.Vid}}">delete</a><br>
+				<a href="/editvideo?vid={{.Vid}}">编辑</a>
+				<a href="/deletevideo?vid={{.Vid}}">删除</a><br>
 				{{.Uploadtime}}
 			</td>
 		</tr>
@@ -74,7 +74,7 @@
 	<input type="hidden" name="curPage" value="{{.CurrentPage}}">
 	<input type="text" size="1" name="reqPage" value="{{.CurrentPage}}">
 	/<span id="totalPage">{{.TotalPage}}</span>
-	<button type="submit" class="btn top-gap-0" name="submit">submit</button>
+	<button type="submit" class="btn top-gap-0" name="submit">跳转</button>
 </form>
 <button type="button" class="btn unit-0 top-gap-0" id="nextPage" onclick="nextPageFunc()">></button>
 </div>

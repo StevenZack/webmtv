@@ -46,17 +46,17 @@
 <div class="flex-vertical top-gap-big">
 <div class="unit-0">
 <form action="/upload" method="post" >
-	<input type="text" name="title" placeholder="Title" maxlength="35" ><br>
+	<input type="text" name="title" placeholder="标题" maxlength="35" ><br>
 
-	<input type="text" name="video" placeholder="Video URL">
-		<input type="button" name="testV" class="btn" onclick="testVideo()" value="Test"><br>
-	<input type="text" name="cover" placeholder="Cover URL">
-		<input type="button" name="testC" class="btn" onclick="testCover()" value="Test"><br>
+	<input type="text" name="video" placeholder="视频URL链接">
+		<input type="button" name="testV" class="btn" onclick="testVideo()" value="测试"><br>
+	<input type="text" name="cover" placeholder="封面URL链接">
+		<input type="button" name="testC" class="btn" onclick="testCover()" value="测试"><br>
 	<select name="videoType" class="top-gap">
-		<option value="normal" selected>Normal</option>
-		<option value="webtorrent">WebTorrent</option>
+		<option value="normal" selected>普通视频</option>
+		<option value="webtorrent">WebTorrent视频</option>
 	</select><br>
-	<input type="submit" name="submit" class="btn btn-primary" value="upload"><br>
+	<input type="submit" name="submit" class="btn btn-primary" value="上传"><br>
 </form>
 </div>
 <div id="tvContainer" class="unit-0 top-gap"></div>
