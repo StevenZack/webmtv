@@ -5,6 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js"></script>
+	<link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css" />
 	<script type="text/javascript">
 	 	function testVideo () {
 	 		var vurl=document.getElementsByName("video")[0].value
@@ -36,24 +37,33 @@
 	 	}
 	</script>
 </head>
-<body><center>
-
-<b onclick="window.history.back()" style="cursor: pointer;">Back</b>
-<b onclick="location.href='/'" style="cursor: pointer;">WebmTV</b><br>
+<body>
+<div class="flex-left" style="box-shadow: 2px 2px 5px #ddd">
+	<div class="unit-0"><button type="button" class="btn top-gap-0" onclick="window.history.back()"><</button></div>
+	<div class="unit-0" style="padding: 5px;"><a href="/">WebmTV</a></div>
+</div>
+<div class="flex-center">
+<div class="flex-vertical top-gap-big">
+<div class="unit-0">
 <form action="/upload" method="post" >
-	Title:<input type="text" name="title" maxlength="35" ><br>
+	<input type="text" name="title" placeholder="Title" maxlength="35" ><br>
 
-	Video URL:<input type="text" name="video">
-		<input type="button" name="testV" onclick="testVideo()" value="Test"><br>
-	Cover URL:<input type="text" name="cover">
-		<input type="button" name="testC" onclick="testCover()" value="Test"><br>
-	<select name="videoType">
+	<input type="text" name="video" placeholder="Video URL">
+		<input type="button" name="testV" class="btn" onclick="testVideo()" value="Test"><br>
+	<input type="text" name="cover" placeholder="Cover URL">
+		<input type="button" name="testC" class="btn" onclick="testCover()" value="Test"><br>
+	<select name="videoType" class="top-gap">
 		<option value="normal" selected>Normal</option>
 		<option value="webtorrent">WebTorrent</option>
-	</select>
-	<input type="submit" name="submit" value="upload"><br>
+	</select><br>
+	<input type="submit" name="submit" class="btn btn-primary" value="upload"><br>
 </form>
-<div id="tvContainer"></div><br>
+</div>
+<div id="tvContainer" class="unit-0 top-gap"></div>
+<div class="unit-0">
 <img id="tc" width="200" height="100">
-</center></body>
+</div>
+</div>
+</div>
+</body>
 </html>

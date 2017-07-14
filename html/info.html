@@ -4,12 +4,14 @@
     <title>WebmTV</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width maximum-scale=1 initial-scale=1">
+	<link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css" />
 </head>
 <body>
-<center>
-<b onclick="window.history.back()" style="cursor: pointer;">Back</b>
-<b onclick="location.href='/'" style="cursor: pointer;">WebmTV</b><br>
-<b>{{.Info}}</b></center>
+<div class="flex-left" style="box-shadow: 2px 2px 5px #ddd">
+	<div class="unit-0"><button type="button" class="btn top-gap-0"><-</button></div>
+	<div class="unit-0" style="padding: 5px;"><a href="/">WebmTV</a></div>
+</div>
+<div class="flex-center top-gap-big"><b>{{.Info}}</b></div>
 {{if .JumpToHome}}
 <script type="text/javascript">
     setTimeout("location.href='/'", 1000)

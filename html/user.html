@@ -4,6 +4,7 @@
 	<title>WebmTV</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css" />
 	<script type="text/javascript">
 		function LogOut(){
 			setCookie("WEBMTV-SESSION-ID","",0)
@@ -25,14 +26,19 @@
 		}
 	</script>
 </head>
-<body><center>
-<b onclick="window.history.back()" style="cursor: pointer;">Back</b>
-<b onclick="location.href='/'" style="cursor: pointer;">WebmTV</b><br>
+<body>
+<div class="flex-left" style="box-shadow: 2px 2px 5px #ddd">
+	<div class="unit-0"><button type="button" class="btn top-gap-0" onclick="window.history.back()"><</button></div>
+	<div class="unit-0" style="padding: 5px;"><a href="/">WebmTV</a></div>
+</div>
+<div class="flex-vertical top-gap">
 {{with .Me}}
-	<h1><b>{{.ID}}</b></h1>
+	<h1 class="unit-0 flex-center">{{.ID}}</h1>
 {{end}}
 {{if .IsMyPage}}
-<input type="button" value="log out" onclick="LogOut()">
+<div class="flex-center unit-0">
+<button type="button"  onclick="LogOut()" class="btn">logout</button>
+</div>
 {{end}}
 <p>Uploads :</p>
 
@@ -59,18 +65,20 @@
 	{{end}}
 {{end}}
 </table>
-<input type="button" id="prePage" onclick="prePageFunc()" value="<-">
+<div class="flex-center unit-0">
+<button type="button" class="btn unit-0 top-gap-0" id="prePage" onclick="prePageFunc()"><</button>
 <form method="post" action="/u">
 	{{with .Me}}
 	<input type="hidden" name="id" value="{{.ID}}">
 	{{end}}
 	<input type="hidden" name="curPage" value="{{.CurrentPage}}">
-	<input type="text" size="2" name="reqPage" value="{{.CurrentPage}}">
+	<input type="text" size="1" name="reqPage" value="{{.CurrentPage}}">
 	/<span id="totalPage">{{.TotalPage}}</span>
-	<input type="submit" name="submit" value="submit">
+	<button type="submit" class="btn top-gap-0" name="submit">submit</button>
 </form>
-<input type="button" id="nextPage" onclick="nextPageFunc()" value="->">
-</center>
+<button type="button" class="btn unit-0 top-gap-0" id="nextPage" onclick="nextPageFunc()">></button>
+</div>
+</div>
 <script type="text/javascript">
 	if (document.getElementsByName("curPage")[0].value=="1") {
 		document.getElementById("prePage").disabled="disabled"

@@ -5,6 +5,7 @@
 	<title>WebmTV</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css" />
 {{with .MVideo}}
 	{{if .IsWebTorrent}}
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js"></script>
@@ -38,27 +39,33 @@
 		}
 	</script>
 	</head>
-	<body><center>
-	
-<b onclick="window.history.back()" style="cursor: pointer;">Back</b>
-<b onclick="location.href='/'" style="cursor: pointer;">WebmTV</b><br>
-	<b>{{.Title}}</b><br>
+	<body>
+<div class="flex-left" style="box-shadow: 2px 2px 5px #ddd">
+	<div class="unit-0"><button type="button" class="btn top-gap-0" onclick="window.history.back()"><</button></div>
+	<div class="unit-0" style="padding: 5px;"><a href="/">WebmTV</a></div>
+</div>
+<div class="flex-left">
+<div class="unit hide-on-mobile"></div>
+<div class="unit-0 flex-vertical top-gap">
+	<b>{{.Title}}</b>
 	{{if not .IsWebTorrent}}
-	<video src="{{.VURL}}" width="320" height="180" controls autoplay></video><br>
+	<video src="{{.VURL}}" width="100%" controls autoplay></video><br>
 	{{else}}
 	<div id="vContainer"></div>
 	{{end}}
-	<p>By:<a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a></p>
+	<p class="top-gap-0">By:<a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a></p>
 
-	<input type="text" name="cm">
-	<input type="button"  value="comment" onclick="addComment()"><br>
+	<div class="flex-left flex-middle top-gap">
+	<input type="text" name="cm" class="unit">
+	<button type="button" class="unit-0 btn btn-primary top-gap-0" onclick="addComment()">comment</button>
+	</div>
 {{end}}
-<div id="cmContainer">
+<div id="cmContainer unit-0">
 {{range .MComments}}
 	<p><a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a>:{{.Data}}</p>
 {{end}}
 </div>
-</center>
+
 {{with .MVideo}}
 {{if .IsWebTorrent}}
 	<script type="text/javascript">
@@ -75,5 +82,8 @@
 </script>
 {{end}}
 {{end}}
+</div>
+<div class="unit hide-on-mobile"></div>
+</div>
 </body>
 </html>

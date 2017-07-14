@@ -4,6 +4,7 @@
 	<title>WebmTV - EditVideo</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css" />
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js"></script>
 	<script type="text/javascript">
 	 	function testVideo () {
@@ -37,16 +38,20 @@
 	</script>
 </head>
 <body>
-<center>
-<b onclick="window.history.back()" style="cursor: pointer;">Back</b>
-<b onclick="location.href='/'" style="cursor: pointer;">WebmTV</b><br>
+<div class="flex-left" style="box-shadow: 2px 2px 5px #ddd">
+	<div class="unit-0"><button type="button" class="btn top-gap-0" onclick="window.history.back()"><</button></div>
+	<div class="unit-0" style="padding: 5px;"><a href="/">WebmTV</a></div>
+</div>
+<div class="flex-center">
+<div class="flex-vertical top-gap-big">
+<div class="unit-0">
 <form action="/editvideo" method="post" >
-	Title:<input type="text" name="title" maxlength="35" value="{{.Title}}"><br>
-	Video URL:<input type="text" name="video" value="{{.VURL}}">
-		<input type="button" name="testV" onclick="testVideo()" value="Test"><br>
-	Cover URL:<input type="text" name="cover" value="{{.Cover}}">
-		<input type="button" name="testC" onclick="testCover()" value="Test"><br>
-	<select name="videoType">
+	<input type="text" name="title" maxlength="35" value="{{.Title}}" placeholder="Title"><br>
+	<input type="text" name="video" value="{{.VURL}}" placeholder="Video URL">
+		<input class="btn" type="button" name="testV" onclick="testVideo()" value="Test"><br>
+	<input type="text" name="cover" value="{{.Cover}}" placeholder="Cover URL">
+		<input class="btn" type="button" name="testC" onclick="testCover()" value="Test"><br>
+	<select name="videoType" class="top-gap">
 		{{if .IsWebTorrent}}
 		<option value="normal">Normal</option>
 		<option value="webtorrent" selected>WebTorrent</option>
@@ -54,12 +59,16 @@
 		<option value="normal" selected>Normal</option>
 		<option value="webtorrent">WebTorrent</option>
 		{{end}}
-	</select>
+	</select><br>
 	<input type="hidden" name="vid" value="{{.Vid}}">
-	<input type="submit" name="submit" value="update"><br>
+	<input type="submit" class="btn btn-primary" name="submit" value="update"><br>
 </form>
-<div id="tvContainer"></div><br>
+</div>
+<div id="tvContainer" class="unit-0 top-gap"></div><br>
+<div class="unit-0">
 <img id="tc" width="200" height="100">
-</center>
+</div>
+</div>
+</div>
 </body>
 </html>

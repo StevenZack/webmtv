@@ -3,16 +3,19 @@
 <head>
 	<title>WebmTV</title>
 	<meta charset="utf-8">
-	 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+	<link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css" />
 </head>
-<body><center>
-<b onclick="window.history.back()" style="cursor: pointer;">Back</b>
-<b onclick="location.href='/'" style="cursor: pointer;">WebmTV</b><br>
+<body>
+<div class="flex-left" style="box-shadow: 2px 2px 5px #ddd">
+	<div class="unit-0"><button type="button" class="btn top-gap-0" onclick="window.history.back()"><</button></div>
+	<div class="unit-0" style="padding: 5px;"><a href="/">WebmTV</a></div>
+</div>
+<div class="flex-center top-gap-big">
 <form action="/login" method="post">
-	<input type="text" name="id"><br>
-	<input type="password" name="password">{{.InvalidAlert}}<br>
-	<input type="submit" name="submit" value="login/register">
+	<input type="text" name="id" placeholder="ID"><br>
+	<input type="password" class="top-gap" name="password" placeholder="Password">{{.InvalidAlert}}<br>
+	<input type="submit" name="submit" class="btn btn-primary" value="login/register">
 </form>
-</center>
 </body>
 </html>
