@@ -31,6 +31,7 @@
 				   p.appendChild(span)
 				   var mConatainer=document.getElementById("cmContainer")
 				   mConatainer.insertBefore(p, mConatainer.firstChild)
+				   document.getElementsByName("cm")[0].value=""
 				}
 			 }
 			 xhr.open("POST", "/comment")
@@ -60,7 +61,7 @@
 	<button type="button" class="unit-0 btn btn-primary top-gap-0" onclick="addComment()">评论</button>
 	</div>
 {{end}}
-<div id="cmContainer unit-0">
+<div id="cmContainer">
 {{range .MComments}}
 	<p><a href="/u?id={{.OwnerID}}">{{.OwnerID}}</a>:{{.Data}}</p>
 {{end}}
