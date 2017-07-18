@@ -8,13 +8,13 @@
 </head>
 <body>
 <div class="flex-left" style="box-shadow: 2px 2px 5px #ddd">
-	<div class="unit-0"><button type="button" class="btn top-gap-0"><-</button></div>
+	<div class="unit-0"><button type="button" class="btn top-gap-0"><</button></div>
 	<div class="unit-0" style="padding: 5px;"><a href="/">WebmTV</a></div>
 </div>
 <div class="flex-center top-gap-big"><b>{{.Info}}</b></div>
-{{if .JumpToHome}}
+{{if .Jump}}
 <script type="text/javascript">
-    setTimeout("location.href='/'", 1000)
+    setTimeout("location.href='{{.JmpUrl}}'", 1000)
 </script>
 {{end}}
 </body>

@@ -16,7 +16,7 @@ func main() {
 	http.HandleFunc("/deletevideo", webmtv.DeleteVideo)
 	http.HandleFunc("/comment", webmtv.HandleComment)
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
-	err := http.ListenAndServe(":8090", nil)
+	err := http.ListenAndServe(":80", nil)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -18,15 +18,20 @@ type UserPageData struct {
 
 func UserPage(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
-	s, _ := mgo.Dial("127.0.0.1")
+	s, err := mgo.Dial("127.0.0.1")
+	if err != nil {
+		go RestartMongodb()
+		ReturnInfo(w, err.Error(), "")
+		return
+	}
 	defer s.Close()
 	upd := UserPageData{CurrentPage: 1, TotalPage: 1}
 	cv := s.DB("webmtv").C("videos")
 	cu := s.DB("webmtv").C("users")
 
-	err := cu.Find(bson.M{"id": id}).One(&upd.Me)
+	err = cu.Find(bson.M{"id": id}).One(&upd.Me)
 	if err != nil {
-		ReturnInfo(w, err.Error(), false)
+		ReturnInfo(w, err.Error(), "")
 		return
 	}
 	sid, _ := r.Cookie("WEBMTV-SESSION-ID")
@@ -39,14 +44,14 @@ func UserPage(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("reqPage") != "" {
 		upd.CurrentPage, err = strconv.Atoi(r.FormValue("reqPage"))
 		if err != nil || upd.CurrentPage < 1 || upd.CurrentPage > upd.TotalPage {
-			ReturnInfo(w, "The page you request doesn't exist", false)
+			ReturnInfo(w, "The page you request doesn't exist", "")
 			return
 		}
 	}
 
 	err = cv.Find(bson.M{"ownerid": id}).Limit(30).Skip((upd.CurrentPage - 1) * 30).Sort("-uploadtime").All(&upd.MyVideos)
 	if err != nil {
-		ReturnInfo(w, err.Error(), false)
+		ReturnInfo(w, err.Error(), "")
 		return
 	}
 	t, _ := template.ParseFiles("./html/user.html")

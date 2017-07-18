@@ -16,20 +16,25 @@ type VideoPageData struct {
 
 func VideoPage(w http.ResponseWriter, r *http.Request) {
 	vid := r.FormValue("vid")
-	s, _ := mgo.Dial("127.0.0.1")
+	s, err := mgo.Dial("127.0.0.1")
+	if err != nil {
+		go RestartMongodb()
+		ReturnInfo(w, err.Error(), "")
+		return
+	}
 	defer s.Close()
 	cv := s.DB("webmtv").C("videos")
 	cc := s.DB("webmtv").C("comments")
 	vpd := VideoPageData{}
 
-	err := cv.Find(bson.M{"vid": vid}).One(&vpd.MVideo)
+	err = cv.Find(bson.M{"vid": vid}).One(&vpd.MVideo)
 	if err != nil {
-		ReturnInfo(w, err.Error(), false)
+		ReturnInfo(w, err.Error(), "")
 		return
 	}
 	err = cc.Find(bson.M{"vid": vid}).Limit(30).Sort("-commenttime").All(&vpd.MComments)
 	if err != nil {
-		ReturnInfo(w, err.Error(), false)
+		ReturnInfo(w, err.Error(), "")
 		return
 	}
 
@@ -54,7 +59,12 @@ func HandleComment(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Plz Login first")
 		return
 	}
-	s, _ := mgo.Dial("127.0.0.1")
+	s, err := mgo.Dial("127.0.0.1")
+	if err != nil {
+		go RestartMongodb()
+		ReturnInfo(w, err.Error(), "")
+		return
+	}
 	defer s.Close()
 	cc := s.DB("webmtv").C("comments")
 	newComment := Comment{
@@ -65,7 +75,7 @@ func HandleComment(w http.ResponseWriter, r *http.Request) {
 	}
 	err = cc.Insert(&newComment)
 	if err != nil {
-		ReturnInfo(w, err.Error(), false)
+		ReturnInfo(w, err.Error(), "")
 		return
 	}
 	fmt.Fprint(w, u.ID)

@@ -19,12 +19,13 @@ func Home(rw http.ResponseWriter, req *http.Request) {
 
 	s, e := mgo.Dial("127.0.0.1")
 	if e != nil {
+		go RestartMongodb()
 		fmt.Fprint(rw, e)
 		return
 	}
-	defer s.Close()
 	vc := s.DB("webmtv").C("videos")
 	vc.Find(nil).Limit(30).Sort("-uploadtime").All(&hd.New)
+	s.Close()
 	sid, err := req.Cookie("WEBMTV-SESSION-ID")
 	if err == nil {
 		user, e := CheckOutSessionID(sid)

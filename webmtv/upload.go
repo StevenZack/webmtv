@@ -24,13 +24,13 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	sid, err := r.Cookie("WEBMTV-SESSION-ID")
 	if err != nil {
 		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
-		ReturnInfo(w, err.Error(), true)
+		ReturnInfo(w, err.Error(), "/login")
 		return
 	}
 	u, err := CheckOutSessionID(sid)
 	if err != nil {
 		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
-		ReturnInfo(w, err.Error(), true)
+		ReturnInfo(w, err.Error(), "/login")
 		return
 	}
 
@@ -46,7 +46,12 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	token := fmt.Sprintf("%x", h5.Sum(nil))
 
 	//store info in mongodb
-	s, _ := mgo.Dial("127.0.0.1")
+	s, err := mgo.Dial("127.0.0.1")
+	if err != nil {
+		go RestartMongodb()
+		ReturnInfo(w, err.Error(), "")
+		return
+	}
 	defer s.Close()
 	mgoNewVideo := s.DB("webmtv").C("videos")
 	newVideo := Video{
@@ -60,37 +65,42 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	err = mgoNewVideo.Insert(&newVideo)
 	if err != nil {
-		ReturnInfo(w, err.Error(), false)
+		ReturnInfo(w, err.Error(), "")
 		return
 	}
 	//return upload-succeed page
-	ReturnInfo(w, "succeed", true)
+	ReturnInfo(w, "succeed", "/")
 }
 func EditVideo(w http.ResponseWriter, r *http.Request) {
 	vid := r.FormValue("vid")
 	sid, err := r.Cookie("WEBMTV-SESSION-ID")
 	if err != nil {
 		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
-		ReturnInfo(w, "please log in first", true)
+		ReturnInfo(w, "please log in first", "/login")
 		return
 	}
 	u, err := CheckOutSessionID(sid)
 	if err != nil {
 		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
-		ReturnInfo(w, "please log in first", true)
+		ReturnInfo(w, "please log in first", "/login")
 		return
 	}
 	fundVideo := Video{}
-	s, _ := mgo.Dial("127.0.0.1")
+	s, err := mgo.Dial("127.0.0.1")
+	if err != nil {
+		go RestartMongodb()
+		ReturnInfo(w, err.Error(), "")
+		return
+	}
 	defer s.Close()
 	cv := s.DB("webmtv").C("videos")
 	err = cv.Find(bson.M{"vid": vid}).One(&fundVideo)
 	if err != nil {
-		ReturnInfo(w, "No such video", false)
+		ReturnInfo(w, "No such video", "")
 		return
 	}
 	if fundVideo.OwnerID != u.ID {
-		ReturnInfo(w, "You don't have permission to edit this video", false)
+		ReturnInfo(w, "You don't have permission to edit this video", "")
 		return
 	}
 	if r.Method == "GET" { // GET
@@ -106,42 +116,47 @@ func EditVideo(w http.ResponseWriter, r *http.Request) {
 		"iswebtorrent": r.FormValue("videoType") == "webtorrent",
 	}})
 	if err != nil {
-		ReturnInfo(w, "Update video info failed:"+err.Error(), false)
+		ReturnInfo(w, "Update video info failed:"+err.Error(), "")
 		return
 	}
-	ReturnInfo(w, "Succeed", true)
+	ReturnInfo(w, "Succeed", "/u?id="+u.ID)
 }
 func DeleteVideo(w http.ResponseWriter, r *http.Request) {
 	vid := r.FormValue("vid")
 	sid, err := r.Cookie("WEBMTV-SESSION-ID")
 	if err != nil {
 		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
-		ReturnInfo(w, "please log in first", true)
+		ReturnInfo(w, "please log in first", "/login")
 		return
 	}
 	u, err := CheckOutSessionID(sid)
 	if err != nil {
 		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
-		ReturnInfo(w, "please log in first", true)
+		ReturnInfo(w, "please log in first", "/login")
 		return
 	}
 	fundVideo := Video{}
-	s, _ := mgo.Dial("127.0.0.1")
+	s, err := mgo.Dial("127.0.0.1")
+	if err != nil {
+		go RestartMongodb()
+		ReturnInfo(w, err.Error(), "")
+		return
+	}
 	defer s.Close()
 	cv := s.DB("webmtv").C("videos")
 	err = cv.Find(bson.M{"vid": vid}).One(&fundVideo)
 	if err != nil {
-		ReturnInfo(w, "No such video", false)
+		ReturnInfo(w, "No such video", "")
 		return
 	}
 	if fundVideo.OwnerID != u.ID {
-		ReturnInfo(w, "You don't have permission to edit this video", false)
+		ReturnInfo(w, "You don't have permission to edit this video", "")
 		return
 	}
 	err = cv.Remove(bson.M{"vid": vid})
 	if err != nil {
-		ReturnInfo(w, "delete failed:"+err.Error(), false)
+		ReturnInfo(w, "delete failed:"+err.Error(), "")
 		return
 	}
-	ReturnInfo(w, "Succeed", true)
+	ReturnInfo(w, "Succeed", "/u?id="+u.ID)
 }

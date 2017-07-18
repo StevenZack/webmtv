@@ -3,6 +3,7 @@ package webmtv
 import (
 	"html/template"
 	"net/http"
+	"os/exec"
 	"time"
 )
 
@@ -27,13 +28,18 @@ type Comment struct {
 	Vid         string
 }
 type InfoData struct {
-	Info       string
-	JumpToHome bool
+	Info   string
+	Jump   bool
+	JmpUrl string
 }
 
-func ReturnInfo(w http.ResponseWriter, err string, b bool) {
+func ReturnInfo(w http.ResponseWriter, err string, jmpUrl string) {
 	t, _ := template.ParseFiles("./html/info.html")
-	t.Execute(w, &InfoData{Info: err, JumpToHome: b})
+	if jmpUrl == "" {
+		t.Execute(w, &InfoData{Info: err, Jump: false})
+	} else {
+		t.Execute(w, &InfoData{Info: err, Jump: true, JmpUrl: jmpUrl})
+	}
 }
 func GetTotalPage(num int) int {
 	a := num / 30
@@ -41,4 +47,7 @@ func GetTotalPage(num int) int {
 		return a + 1
 	}
 	return a
+}
+func RestartMongodb() {
+	exec.Command("systemctl", "restart", "mongodb").Run()
 }

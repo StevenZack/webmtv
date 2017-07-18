@@ -23,7 +23,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, nil)
 		return
 	}
-	s, _ := mgo.Dial("127.0.0.1")
+	s, err := mgo.Dial("127.0.0.1")
+	if err != nil {
+		go RestartMongodb()
+		ReturnInfo(w, err.Error(), "")
+		return
+	}
 	defer s.Close()
 	c := s.DB("webmtv").C("users")
 	ld := LoginData{}
@@ -47,7 +52,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			t.Execute(w, ld)
 			return
 		}
-		ReturnInfo(w, "Succeed", true)
+		ReturnInfo(w, "Succeed", "/")
 		return
 	}
 	t, _ := template.ParseFiles("./html/login.html")
@@ -56,7 +61,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	return
 }
 func CheckOutSessionID(sid *http.Cookie) (*User, error) {
-	s, _ := mgo.Dial("127.0.0.1")
+	s, err := mgo.Dial("127.0.0.1")
+	if err != nil {
+		go RestartMongodb()
+		return nil, errors.New("mongodb invalable")
+	}
+	defer s.Close()
 	c := s.DB("webmtv").C("users")
 	result := User{}
 	e := c.Find(bson.M{"sessionid": sid.Value}).One(&result)
