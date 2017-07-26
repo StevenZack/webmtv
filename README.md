@@ -1,2 +1,2 @@
-#webmtv
-WebmTV is a video web site: <a href="http://webmtv.xyz">webmtv.xyz</a>
+# WebmTV 
+This is a video web site written in Go: <a href="http://webmtv.xyz">webmtv.xyz</a>
