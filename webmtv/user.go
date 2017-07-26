@@ -57,3 +57,32 @@ func UserPage(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("./html/user.html")
 	t.Execute(w, upd)
 }
+func HandleFollow(w http.ResponseWriter, r *http.Request) {
+	id := r.FormValue("id")
+	sid, err := r.Cookie("WEBMTV-SESSION-ID")
+	if err != nil {
+		fmt.Fprint(w, "Plz Login first")
+		return
+	}
+	u, err := CheckOutSessionID(sid)
+	if err != nil {
+		http.SetCookie(w, &http.Cookie{
+			Name:    "WEBMTV-SESSION-ID",
+			Value:   "",
+			Expires: time.Now(),
+		})
+		fmt.Fprint(w, "Plz Login first")
+		return
+	}
+	s, err := mgo.Dial("127.0.0.1")
+	if err != nil {
+		go RestartMongodb()
+		ReturnInfo(w, "err:"+err.Error(), "")
+		return
+	}
+	defer s.Close()
+
+}
+func HandleUnfollow(w http.ResponseWriter, r *http.Request) {
+
+}

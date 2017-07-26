@@ -45,6 +45,10 @@ type InfoData struct {
 	Jump   bool
 	JmpUrl string
 }
+type FollowTO struct {
+	FromID string
+	ToID   string
+}
 
 func ReturnInfo(w http.ResponseWriter, err string, jmpUrl string) {
 	t, _ := template.ParseFiles("./html/info.html")
