@@ -40,9 +40,11 @@
 <button type="button"  onclick="LogOut()" class="btn">登出</button>
 </div>
 {{end}}
+
+<div class="flex-left">
+<div class="unit"></div>
+<div class="unit-0">
 <p>上传的视频 :</p>
-
-
 <table border="0">
 {{if .IsMyPage}}
 	{{range .MyVideos}}
@@ -50,7 +52,7 @@
 			<td><img src="{{.Cover}}" width="200" height="100"></td>
 			<td><a href="/v?vid={{.Vid}}">{{.Title}}</a><br>
 				<a href="/editvideo?vid={{.Vid}}">编辑</a>
-				<a href="/deletevideo?vid={{.Vid}}">删除</a><br>
+				<span onclick="if (confirm('确定要删除吗')) {location.href='/deletevideo?vid={{.Vid}}';}">删除</span><br>
 				{{.Uploadtime}}
 			</td>
 		</tr>
@@ -77,6 +79,9 @@
 	<button type="submit" class="btn top-gap-0" name="submit">跳转</button>
 </form>
 <button type="button" class="btn unit-0 top-gap-0" id="nextPage" onclick="nextPageFunc()">></button>
+</div>
+</div>
+<div class="unit"></div>
 </div>
 </div>
 <script type="text/javascript">

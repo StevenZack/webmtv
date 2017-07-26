@@ -35,9 +35,28 @@
 	 		var curl=document.getElementsByName("cover")[0].value
 	 		document.getElementById("tc").src=curl
 	 	}
+	 	function playlistChanged(v){
+	 		if (v=="add"){
+	 		var str=prompt("输入专辑名", "")
+	 		var sid=document.getElementsByName("playlist")[0]
+	 		for (var i = sid.options.length - 1; i >= 0; i--) {
+	 			if(sid.options[i].value==str){
+	 				alert("已经存在的专辑名")
+	 				sid.value="默认专辑"
+	 				return
+	 			}
+	 		}
+	 		var o=new Option()
+	 		o.value=str
+	 		o.innerHTML=str
+	 		sid.insertBefore(o, sid.lastChild)
+	 		sid.value=str
+	 		}
+	 	}
 	</script>
 </head>
 <body>
+{{with .Me}}
 <div class="flex-left" style="box-shadow: 2px 2px 5px #ddd">
 	<div class="unit-0"><button type="button" class="btn top-gap-0" onclick="window.history.back()"><</button></div>
 	<div class="unit-0" style="padding: 5px;"><a href="/">WebmTV</a></div>
@@ -46,22 +65,29 @@
 <div class="flex-vertical top-gap-big">
 <div class="unit-0">
 <form action="/editvideo" method="post" >
-	<input type="text" name="title" maxlength="35" value="{{.Title}}" placeholder="Title"><br>
+	<input type="text" name="title" maxlength="35" value="{{.Title}}" placeholder="标题"><br>
 	<input type="text" name="video" value="{{.VURL}}" placeholder="Video URL">
-		<input class="btn" type="button" name="testV" onclick="testVideo()" value="Test"><br>
+		<input class="btn" type="button" name="testV" onclick="testVideo()" value="测试"><br>
 	<input type="text" name="cover" value="{{.Cover}}" placeholder="Cover URL">
-		<input class="btn" type="button" name="testC" onclick="testCover()" value="Test"><br>
+		<input class="btn" type="button" name="testC" onclick="testCover()" value="测试"><br>
 	<select name="videoType" class="top-gap">
 		{{if .IsWebTorrent}}
-		<option value="normal">Normal</option>
+		<option value="normal">普通视频</option>
 		<option value="webtorrent" selected>WebTorrent</option>
 		{{else}}
-		<option value="normal" selected>Normal</option>
-		<option value="webtorrent">WebTorrent</option>
+		<option value="normal" selected>普通视频</option>
+		<option value="webtorrent">WebTorrent视频</option>
 		{{end}}
 	</select><br>
 	<input type="hidden" name="vid" value="{{.Vid}}">
-	<input type="submit" class="btn btn-primary" name="submit" value="update"><br>
+{{end}}
+	添加到专辑:<select name="playlist" onchange="playlistChanged(this.options[this.options.selectedIndex].value)">
+		{{range .PlayLists}}
+		<option value="{{.Title}}">{{.Title}}</option>
+		{{end}}
+		<option value="add">+新建专辑</option>
+	</select>
+	<input type="submit" class="btn btn-primary" name="submit" value="更新"><br>
 </form>
 </div>
 <div id="tvContainer" class="unit-0 top-gap"></div><br>
@@ -70,5 +96,10 @@
 </div>
 </div>
 </div>
+{{with .Me}}
+<script type="text/javascript">
+	document.getElementsByName("playlist")[0].value={{.PlayListTitle}}
+</script>
+{{end}}
 </body>
 </html>
