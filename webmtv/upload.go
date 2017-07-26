@@ -1,26 +1,18 @@
 package webmtv
 
 import (
-	"crypto/md5"
-	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"html/template"
-	"io"
 	"net/http"
-	"strconv"
 	"time"
 )
 
 type UploadData struct {
+	PlayLists []PlayList
 }
 
 func Upload(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		t, _ := template.ParseFiles("./html/upload.html")
-		t.Execute(w, nil)
-		return
-	}
 	sid, err := r.Cookie("WEBMTV-SESSION-ID")
 	if err != nil {
 		http.SetCookie(w, &http.Cookie{Name: "WEBMTV-SESSION-ID", Value: "", Expires: time.Now()})
@@ -33,19 +25,6 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		ReturnInfo(w, err.Error(), "/login")
 		return
 	}
-
-	r.ParseMultipartForm(1 << 20)
-	mVideo := r.FormValue("video")
-	mCover := r.FormValue("cover")
-	title := r.FormValue("title")
-	isWebTorrent := r.FormValue("videoType") == "webtorrent"
-
-	ct := time.Now().Unix()
-	h5 := md5.New()
-	io.WriteString(h5, strconv.FormatInt(ct, 10))
-	token := fmt.Sprintf("%x", h5.Sum(nil))
-
-	//store info in mongodb
 	s, err := mgo.Dial("127.0.0.1")
 	if err != nil {
 		go RestartMongodb()
@@ -53,17 +32,84 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer s.Close()
+
 	mgoNewVideo := s.DB("webmtv").C("videos")
+	cpl := s.DB("webmtv").C("playlists")
+
+	ud := UploadData{}
+	if r.Method == "GET" {
+		err := cpl.Find(bson.M{"ownerid": u.ID}).All(&ud.PlayLists)
+		if err != nil {
+			ReturnInfo(w, err.Error(), "")
+			return
+		}
+		t, _ := template.ParseFiles("./html/upload.html")
+		t.Execute(w, &ud)
+		return
+	}
+
+	mVideo := r.FormValue("video")
+	mCover := r.FormValue("cover")
+	title := r.FormValue("title")
+	isWebTorrent := r.FormValue("videoType") == "webtorrent"
+	pl := r.FormValue("playlist")
+
+	vtoken := NewToken()
+
+	err = cpl.Find(bson.M{"ownerid": u.ID, "title": pl}).All(&ud.PlayLists)
+	if err == nil && len(ud.PlayLists) > 0 { //insert into existed playlist
+		newVideo := Video{
+			Uploadtime:    time.Now(),
+			Title:         title,
+			Vid:           vtoken,
+			VURL:          mVideo,
+			Cover:         mCover,
+			OwnerID:       u.ID,
+			IsWebTorrent:  isWebTorrent,
+			PlayListID:    ud.PlayLists[0].Vid,
+			PlayListTitle: pl,
+		}
+		err = mgoNewVideo.Insert(&newVideo)
+		if err != nil {
+			ReturnInfo(w, err.Error(), "")
+			return
+		}
+		err = cpl.Update(bson.M{"ownerid": u.ID, "title": pl}, bson.M{"$set": bson.M{"listlength": len(ud.PlayLists) + 1}})
+		if err != nil {
+			ReturnInfo(w, err.Error(), "")
+			return
+		}
+		//return upload-succeed page
+		ReturnInfo(w, "succeed", "/")
+		return
+	}
+	//insert into a new playlist
+	pltoken := NewToken()
+
 	newVideo := Video{
-		Uploadtime:   time.Now(),
-		Title:        title,
-		Vid:          token,
-		VURL:         mVideo,
-		Cover:        mCover,
-		OwnerID:      u.ID,
-		IsWebTorrent: isWebTorrent,
+		Uploadtime:    time.Now(),
+		Title:         title,
+		Vid:           vtoken,
+		VURL:          mVideo,
+		Cover:         mCover,
+		OwnerID:       u.ID,
+		IsWebTorrent:  isWebTorrent,
+		PlayListID:    pltoken,
+		PlayListTitle: pl,
 	}
 	err = mgoNewVideo.Insert(&newVideo)
+	if err != nil {
+		ReturnInfo(w, err.Error(), "")
+		return
+	}
+	newPlayList := PlayList{
+		Title:      pl,
+		Vid:        pltoken,
+		Cover:      mCover,
+		OwnerID:    u.ID,
+		ListLength: 1,
+	}
+	err = cpl.Insert(&newPlayList)
 	if err != nil {
 		ReturnInfo(w, err.Error(), "")
 		return

@@ -1,9 +1,13 @@
 package webmtv
 
 import (
+	"crypto/md5"
+	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 	"os/exec"
+	"strconv"
 	"time"
 )
 
@@ -13,13 +17,22 @@ type User struct {
 	Sessionid string
 }
 type Video struct {
-	Uploadtime   time.Time
-	Title        string
-	Vid          string
-	VURL         string
-	Cover        string
-	OwnerID      string
-	IsWebTorrent bool
+	Uploadtime    time.Time
+	Title         string
+	Vid           string
+	VURL          string
+	Cover         string
+	OwnerID       string
+	IsWebTorrent  bool
+	PlayListTitle string
+	PlayListID    string
+}
+type PlayList struct {
+	Title      string
+	Vid        string
+	Cover      string
+	OwnerID    string
+	ListLength int
 }
 type Comment struct {
 	Data        string
@@ -50,4 +63,11 @@ func GetTotalPage(num int) int {
 }
 func RestartMongodb() {
 	exec.Command("systemctl", "restart", "mongodb").Run()
+}
+func NewToken() string {
+	ct := time.Now().Unix()
+	h5 := md5.New()
+	io.WriteString(h5, strconv.FormatInt(ct, 10))
+	token := fmt.Sprintf("%x", h5.Sum(nil))
+	return token
 }

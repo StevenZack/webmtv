@@ -35,6 +35,24 @@
 	 		var curl=document.getElementsByName("cover")[0].value
 	 		document.getElementById("tc").src=curl
 	 	}
+	 	function playlistChanged(v){
+	 		if (v=="add"){
+	 		var str=prompt("输入专辑名", "")
+	 		var sid=document.getElementsByName("playlist")[0]
+	 		for (var i = sid.options.length - 1; i >= 0; i--) {
+	 			if(sid.options[i].value==str){
+	 				alert("已经存在的专辑名")
+	 				sid.value="默认专辑"
+	 				return
+	 			}
+	 		}
+	 		var o=new Option()
+	 		o.value=str
+	 		o.innerHTML=str
+	 		sid.insertBefore(o, sid.lastChild)
+	 		sid.value=str
+	 		}
+	 	}
 	</script>
 </head>
 <body>
@@ -56,6 +74,13 @@
 		<option value="normal" selected>普通视频</option>
 		<option value="webtorrent">WebTorrent视频</option>
 	</select><br>
+	添加到专辑:<select name="playlist" onchange="playlistChanged(this.options[this.options.selectedIndex].value)">
+		<option selected value="默认专辑">默认专辑</option>
+		{{range .PlayLists}}
+		<option value="{{.Title}}">{{.Title}}</option>
+		{{end}}
+		<option value="add">+新建专辑</option>
+	</select>
 	<input type="submit" name="submit" class="btn btn-primary" value="上传"><br>
 </form>
 </div>
