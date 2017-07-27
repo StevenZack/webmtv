@@ -4,6 +4,7 @@
 	<title>WebmTV</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+{{with .Me}}
 	<link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css" />
 	<script type="text/javascript">
 		function LogOut(){
@@ -24,6 +25,56 @@
 			var reqPage=(new Number(document.getElementsByName("curPage")[0].value)+1).toString()
 			location.href="/u?id="+document.getElementsByName("id")[0].value+"&reqPage="+reqPage
 		}
+		function unFollow(){
+			var xhr=new XMLHttpRequest()
+			var str="id="+encodeURIComponent("{{.ID}}")
+			xhr.onreadystatechange=function(){
+				if (xhr.readyState==XMLHttpRequest.DONE) {
+					var result=document.getElementById("result")
+					var bt=document.getElementById("bt-follow")
+					var flers=document.getElementById("followers")
+					if (xhr.responseText=="Plz Login first") {
+						result.innerHTML="您还没有登录"
+					}else if (xhr.responseText=="succeed") {
+						bt.style.backgroundColor = '#2273c3'
+						bt.style.color  = '#fff'
+						bt.onclick=Follow
+						bt.innerHTML="关注"
+						flers.innerHTML=(parseInt(flers.innerHTML)-1).toString()
+					}else{
+						result.innerHTML=xhr.responseText
+					}
+				}
+			}
+			xhr.open("POST", "/unfollow")
+			xhr.setRequestHeader("Content-Type", "Application/x-www-form-urlencoded")
+			xhr.send(str)
+		}
+		function Follow(){
+			var xhr=new XMLHttpRequest()
+			var str="id="+encodeURIComponent("{{.ID}}")
+			xhr.onreadystatechange=function(){
+				if (xhr.readyState==XMLHttpRequest.DONE) {
+					var result=document.getElementById("result")
+					var bt=document.getElementById("bt-follow")
+					var flers=document.getElementById("followers")
+					if (xhr.responseText=="Plz Login first") {
+						result.innerHTML="您还没有登录"
+					}else if (xhr.responseText=="succeed") {
+						bt.style.backgroundColor = '#fff'
+						bt.style.color  = '#000'
+						bt.onclick=unFollow
+						bt.innerHTML="已关注"
+						flers.innerHTML=(parseInt(flers.innerHTML)+1).toString()
+					}else{
+						result.innerHTML=xhr.responseText
+					}
+				}
+			}
+			xhr.open("POST", "/follow")
+			xhr.setRequestHeader("Content-Type", "Application/x-www-form-urlencoded")
+			xhr.send(str)
+		}
 	</script>
 </head>
 <body>
@@ -32,14 +83,19 @@
 	<div class="unit-0" style="padding: 5px;"><a href="/">WebmTV</a></div>
 </div>
 <div class="flex-vertical top-gap">
-{{with .Me}}
 	<h1 class="unit-0 flex-center">{{.ID}}</h1>
 {{end}}
+<div class="flex-center unit-0 flex-middle">
+关注者:<span style="margin-right: 10px" id="followers">{{.Followers}}</span> 关注:<span style="margin-right: 10px"  id="followed">{{.Followed}}</span>
 {{if .IsMyPage}}
-<div class="flex-center unit-0">
-<button type="button"  onclick="LogOut()" class="btn">登出</button>
-</div>
+<button type="button"  onclick="LogOut()" class="btn top-gap-0">登出</button>
+{{else if .IsFollowedByYou}}
+<button type="button" id="bt-follow" class="btn top-gap-0" onclick="unFollow()"> 已关注</button>
+{{else}}
+<button type="button" id="bt-follow" class="btn btn-primary top-gap-0" onclick="Follow()"> 关注</button>
 {{end}}
+<span id="result"></span>
+</div>
 
 <div class="flex-left">
 <div class="unit"></div>
